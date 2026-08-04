@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Download</title>
+</head>
+<body>
+  <button id="downloadBtn">Download Archive.zip</button>
+
+  <script>
+    const FILE_URL = "https://github.com/dcontreras606/zzz__a/raw/refs/heads/main/Archive.zip";
+    const FILE_NAME = "Archive.zip";
+
+    document.getElementById("downloadBtn").addEventListener("click", async () => {
+      try {
+        // Fetch + Blob avoids the browser navigating/opening a new tab for
+        // cross-origin URLs (which plain <a download> cannot force).
+        const response = await fetch(FILE_URL);
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const blob = await response.blob();
+
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = objectUrl;
+        link.download = FILE_NAME;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(objectUrl);
+      } catch (err) {
+        // Fallback: direct navigation still triggers a download for binary
+        // types like .zip in most browsers, just without a custom filename.
+        window.location.href = FILE_URL;
+      }
+    });
+  </script>
+</body>
+</html>
